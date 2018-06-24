@@ -36,22 +36,45 @@ class Payment {
         return $this->intermediary->create();
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function payment(array $data) {
         return $this->intermediary->payment($data);
     }
 
+    /**
+     * @return mixed
+     */
     public function send() {
         return $this->intermediary->send();
     }
 
+    /**
+     * @param $items
+     * @return mixed
+     */
     public function addItems($items) {
         return $this->intermediary->addItems($items);
     }
 
+    /**
+     * @param $name
+     * @param $price
+     * @param int $quantity
+     * @param string $description
+     * @return mixed
+     */
     public function addItem($name, $price, $quantity = 1, $description = '') {
         return $this->intermediary->addItem($name, $price, $quantity, $description);
     }
 
+    /**
+     * @param $data
+     * @throws InvalidArgumentException
+     * @throws RequiredArgumentException
+     */
     public function addReceiver($data) {
 
         if (!isset($data)) {
@@ -78,8 +101,8 @@ class Payment {
         $this->intermediary->addCustomer($data);
     }
 
-    public function addUniqueId($compraId) {
-        $this->intermediary->addUniqueId($compraId);
+    public function addUniqueId($uniqueId) {
+        $this->intermediary->addUniqueId($uniqueId);
     }
 
     public function addPaymentMethod($type, $data) {

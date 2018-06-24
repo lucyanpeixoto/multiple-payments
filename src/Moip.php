@@ -9,6 +9,8 @@ use Moip\Exceptions\UnexpectedException;
 use Moip\Exceptions\ValidationException;
 use Moip\Moip as Sdk;
 use Payment\Contracts\PaymentInterface;
+use Payment\Exceptions\InvalidArgumentException;
+use Payment\Exceptions\RequiredArgumentException;
 
 class Moip extends Intermediary implements PaymentInterface{
 
@@ -27,9 +29,36 @@ class Moip extends Intermediary implements PaymentInterface{
     private $paymentMethodType;
     private $payment;
 
-    public function __construct($accessToken = '') {
-        $this->accessToken = $accessToken;
-        $this->addCredentials();
+    /**
+     * Moip constructor.
+     * @throws RequiredArgumentException
+     * @throws InvalidArgumentException
+     */
+    public function __construct() {
+
+        $args = func_get_args();
+
+        if (!empty($args)) {
+
+            if (count($args) == 1) {
+                $this->setAccessToken($args[0]);
+                $this->moip = $this->auth();
+            } elseif (count($args) == 2) {
+                $this->setToken($args[0]);
+                $this->setKey($args[1]);
+                $this->moip = $this->basicAuth();
+            } else {
+                throw new InvalidArgumentException('');
+            }
+
+        } else {
+            throw new RequiredArgumentException('a');
+        }
+
+        $this->order = $this->moip->orders();
+
+        $this->setEndPoint(Sdk::ENDPOINT_SANDBOX);
+
     }
 
     public function addCredentials() {
@@ -40,8 +69,6 @@ class Moip extends Intermediary implements PaymentInterface{
             $this->setAccessToken($this->accessToken);
             $this->moip = $this->auth();
             $this->order = $this->moip->orders();
-
-
     }
 
     public function basicAuth() {
@@ -51,14 +78,8 @@ class Moip extends Intermediary implements PaymentInterface{
         return new Sdk(new OAuth($this->getAccessToken()), $this->getEndPoint());
     }
 
-    public function createApp() {
-        /*$ch = curl_init();
-        $data = [
-            "name" => \Configure::read('Whitelabel.description'),
-            "description" => \Configure::read('Whitelabel.tagline'),
-            "site" => \Router::url('/', true),
-            "redirectUri" => \Router::url('/', true) . self::REDIRECT_URI
-        ];
+    public function createApp($data) {
+        $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
@@ -74,7 +95,7 @@ class Moip extends Intermediary implements PaymentInterface{
         $app = json_decode($server_output);
         curl_close ($ch);
 
-        return $app;*/
+        return $app;
     }
 
     public function getAuthUrl($clientId) {
@@ -292,19 +313,18 @@ class Moip extends Intermediary implements PaymentInterface{
 
     public function addCustomer($data) {
         $customer = $this->moip->customers()->setOwnId(uniqid())
-            ->setFullname('Lucyan Peixoto')
-            ->setEmail('lucyan@outlook.com')
-            ->setBirthDate('1988-12-30')
-            ->setTaxDocument('22222222222')
-            ->setPhone(11, 66778899)
+            ->setFullname($data['name'] . ' ' . $data['lastName'])
+            ->setEmail($data['email'])
+            ->setTaxDocument($data['taxDocument'])
+            ->setPhone(substr($data['phone'], 0, 2), substr($data['phone'], 2, 9))
             ->addAddress('BILLING',
-                'Rua de teste', 123,
-                'Bairro', 'Sao Paulo', 'SP',
-                '01234567', 8)
+                $data['street'], $data['number'],
+                $data['district'], $data['city'], $data['state'],
+                $data['zip'], $data['complement'], $data['country'])
             ->addAddress('SHIPPING',
-                'Rua de teste do SHIPPING', 123,
-                'Bairro do SHIPPING', 'Sao Paulo', 'SP',
-                '01234567', 8)
+                $data['street'], $data['number'],
+                $data['district'], $data['city'], $data['state'],
+                $data['zip'], $data['complement'], $data['country'])
             ->create();
 
         $this->order->setCustomer($customer);
