@@ -71,27 +71,23 @@ class Moip extends Intermediary implements PaymentInterface{
 
     public function createApp($data) {
 
-        try {
-            $ch = curl_init();
+        $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Authorization: Basic ' . base64_encode($this->getToken() . ':' . $this->getKey())
-                )
-            );
-            curl_setopt($ch, CURLOPT_URL, $this->getEndPoint() . "/v2/channels");
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $server_output = curl_exec ($ch);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Authorization: Basic ' . base64_encode($this->getToken() . ':' . $this->getKey())
+            )
+        );
+        curl_setopt($ch, CURLOPT_URL, $this->getEndPoint() . "/v2/channels");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $server_output = curl_exec ($ch);
 
-            $app = json_decode($server_output);
-            curl_close ($ch);
+        $app = json_decode($server_output);
+        curl_close ($ch);
 
-            return $app;
-        } catch (\Exception $e) {
-            throw new Payment\Exceptions\ValidationException('Erro ao criar o app', 400);
-        }
+        return $app;
     }
 
     public function getAuthUrl($data = []) {
