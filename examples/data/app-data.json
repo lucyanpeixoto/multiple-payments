@@ -1,8 +1,0 @@
-{
-  
-  "name": "App name",
-  "description": "App description",
-  "site": "http://www.example.com",
-  "redirectUri": "http://localhost/redirect"
-
-}

@@ -8,11 +8,6 @@ interface PaymentInterface {
     /**
      * @param empty
      */
-    function addCredentials();
-
-    /**
-     * @param empty
-     */
     function auth();
 
     /**

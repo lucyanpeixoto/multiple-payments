@@ -8,14 +8,24 @@ class Intermediary {
     private $token;
     private $key;
     private $endPoint;
-    private $notificationUrl;
+    private $env;
 
     const BOLETO = 2;
-    const DEBITO = 3;
-    const CARTAO_DE_CREDITO = 1;
+    const ONLINE_DEBIT = 3;
+    const CREDIT_CARD = 1;
     const PRIMARY_RECEIVER = 1;
     const SECONDARY_RECEIVER = 2;
+    const PRODUCTION = 'production';
+    const SANDBOX = 'sandbox';
 
+
+    public function setEnv($env) {
+        $this->env = strtolower($env);
+    }
+
+    public function getEnv() {
+        return $this->env;
+    }
 
     public function setAccessToken($accessToken) {
         $this->accessToken = $accessToken;

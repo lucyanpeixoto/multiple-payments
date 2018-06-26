@@ -9,6 +9,9 @@ class Payment {
 
     const PRIMARY_RECEIVER = 1;
     const SECONDARY_RECEIVER = 2;
+    const BOLETO = 2;
+    const ONLINE_DEBIT = 3;
+    const CREDIT_CARD = 1;
 
     private $intermediary;
 
