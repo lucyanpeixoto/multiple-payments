@@ -1,5 +1,7 @@
 {
     "receiverId" : "MPA-5D5DB6448931",
     "type" : 2,
-    "percentage" : 10
+    "percentage" : null,
+    "fixed": null,
+    "feePayor": true
 }
