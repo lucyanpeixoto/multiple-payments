@@ -41,7 +41,6 @@ class Moip extends Intermediary implements PaymentInterface{
         }elseif (isset($config['access_token']) && !empty($config['access_token'])) {
             $this->setAccessToken($config['access_token']);
             $this->moip = $this->auth();
-            $this->order = $this->moip->orders();
         }        
     }
 
