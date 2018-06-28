@@ -95,6 +95,7 @@ class Moip extends Intermediary implements PaymentInterface{
         $defaults = [
             'type' => 'MERCHANT',
             'country_code' => 55,
+            'country' => 'BRA'
         ];
 
         $data = array_merge($data, $defaults);
@@ -255,15 +256,39 @@ class Moip extends Intermediary implements PaymentInterface{
         return $account;
     }
 
-    public function checkAccountExists($identity_document){
+    public function checkAccountExists($taxDocument){
+
+        if ($taxDocument == null) {
+            throw new RequiredArgumentException('taxDocument é obrigatório', 400);
+        }
 
         try{ 
-            return $this->moip->accounts()->checkExistence($identity_document); 
+            return $this->moip->accounts()->checkExistence($taxDocument); 
         }catch (UnexpectedException $e) {
-           throw new \Exception($e->getMessage());
-        }catch (ValidationException $e) {
-           throw new \Exception($e->getMessage());
+            throw new Exception($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new Exception($e->getMessage(), 403);
         }
  
+    }
+
+    public function consultAccount($clientId){
+
+        if ($clientId == null) {
+            throw new RequiredArgumentException('clientId é obrigatório', 400);
+        }
+
+        try{
+            $account = $this->moip->accounts()->get($clientId);
+            return $account;
+        }catch (UnexpectedException $e) {
+            throw new Exception($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new Exception($e->getMessage(), 403);
+        } 
     }
 }
