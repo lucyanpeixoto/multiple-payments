@@ -4,4 +4,7 @@ namespace Payment\Exceptions;
 
 use Exception;
 
-class ErrorException extends Exception {}
+class ValidationException extends Exception 
+{
+    
+}

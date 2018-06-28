@@ -6,11 +6,12 @@ use Moip\Auth\Connect;
 use Moip\Auth\OAuth;
 use Moip\Exceptions\UnautorizedException;
 use Moip\Exceptions\UnexpectedException;
-use Moip\Exceptions\ValidationException;
+use Moip\Exceptions\ValidationException as MoipValidationException;
 use Moip\Moip as MoipSdk;
 use Payment\Contracts\PaymentInterface;
 use Payment\Exceptions\InvalidArgumentException;
 use Payment\Exceptions\RequiredArgumentException;
+use Payment\Exceptions\ValidationException;
 
 class Moip extends Intermediary implements PaymentInterface{
 
@@ -72,7 +73,6 @@ class Moip extends Intermediary implements PaymentInterface{
     public function createApp($data) {
 
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Authorization: Basic ' . base64_encode($this->getToken() . ':' . $this->getKey())
@@ -89,6 +89,38 @@ class Moip extends Intermediary implements PaymentInterface{
 
         return $app;
     }
+
+    public function createAccount($data) {
+
+        $defaults = [
+            'type' => 'MERCHANT',
+            'country_code' => 55,
+        ];
+
+        $data = array_merge($data, $defaults);
+
+        try {
+            return $this->moip->accounts()
+                ->setName($data['name'])
+                ->setLastName($data['lastName'])
+                ->setEmail($data['email'])
+                ->setBirthDate($data['birthDate'])
+                ->setTaxDocument($data['taxDocument'])
+                ->setType($data['type'])
+                ->setPhone(substr($data['phone'], 0, 2), substr($data['phone'], 2, 9), $data['country_code'])
+                ->addAddress($data['street'], $data['number'],
+                    $data['district'], $data['city'], $data['state'],
+                    $data['zip'], $data['complement'], $data['country'])
+                ->create(); 
+        }catch (UnexpectedException $e) {
+            throw new Exception($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new Exception($e->getMessage(), 403);
+        }
+    }
+
 
     public function getAuthUrl($data = []) {
         $connect = new Connect($data['redirectUri'], $data['appId'], true, $this->getEnv() == 'production' ? Connect::ENDPOINT_PRODUCTION : Connect::ENDPOINT_SANDBOX);
@@ -107,7 +139,7 @@ class Moip extends Intermediary implements PaymentInterface{
             return $connect->authorize();
         }catch (UnexpectedException $e) {
             pr($e->getMessage());
-        }catch (ValidationException $e) {
+        }catch (MoipValidationException $e) {
             pr($e->getMessage());
         }
     }
@@ -125,7 +157,7 @@ class Moip extends Intermediary implements PaymentInterface{
 
         }catch (UnexpectedException $e) {
             pr($e->getMessage());
-        }catch (ValidationException $e) {
+        }catch (MoipValidationException $e) {
             pr($e->getErrors());
         }catch (UnautorizedException $e) {
             pr($e->getMessage());
@@ -174,7 +206,7 @@ class Moip extends Intermediary implements PaymentInterface{
 
         }catch (UnexpectedException $e) {
             pr($e->getMessage());
-        }catch (ValidationException $e) {
+        }catch (MoipValidationException $e) {
             pr($e->getErrors());
         }catch (UnautorizedException $e) {  
             pr($e->getMessage());
