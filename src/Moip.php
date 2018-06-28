@@ -254,4 +254,16 @@ class Moip extends Intermediary implements PaymentInterface{
 
         return $account;
     }
+
+    public function checkAccountExists($identity_document){
+
+        try{ 
+            return $this->moip->accounts()->checkExistence($identity_document); 
+        }catch (UnexpectedException $e) {
+           throw new \Exception($e->getMessage());
+        }catch (ValidationException $e) {
+           throw new \Exception($e->getMessage());
+        }
+ 
+    }
 }
