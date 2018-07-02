@@ -51,7 +51,7 @@ class Moip extends Intermediary implements PaymentInterface{
 
     public function setDefaults($config) {
 
-        $config += ['env' => 'sandbox'];
+        $config = array_merge($config, ['env' => 'sandbox']);
 
         $this->setEnv($config['env']);
 
