@@ -119,4 +119,8 @@ class Payment {
     public function order($data) {
         return $this->intermediary->order($data);
     }
+
+    public function getAuth() {
+        return $this->intermediary->getAuth();
+    }
 }

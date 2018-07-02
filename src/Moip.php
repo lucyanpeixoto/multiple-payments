@@ -70,6 +70,10 @@ class Moip extends Intermediary implements PaymentInterface{
         return new MoipSdk(new OAuth($this->getAccessToken()), $this->getEndPoint());
     }
 
+    public function getAuth() {
+        return $this->moip;
+    }
+
     public function createApp($data) {
 
         $ch = curl_init();
