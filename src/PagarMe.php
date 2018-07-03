@@ -4,6 +4,7 @@ namespace Payment;
 
 use PagarMe\Sdk\Customer\Phone;
 use PagarMe\Sdk\Customer\Address;
+use PagarMe\Sdk\Customer\Customer;
 use Payment\Contracts\PaymentInterface;
 use PagarMe\Sdk\PagarMe as PagarMeSdk;
 use PagarMe\Sdk\ClientException;
@@ -16,6 +17,9 @@ class PagarMe extends Intermediary implements PaymentInterface
     private $pagarMe;
     private $payment;
     private $customer;
+    private $uniqueId;
+    private $items;
+    private $receiver;
 
     public function __construct($config = []) 
     {
@@ -52,19 +56,26 @@ class PagarMe extends Intermediary implements PaymentInterface
 
     public function addUniqueId($uniqueId)
     {
-
+        $this->uniqueId = $uniqueId;
     }
 
 
     public function addItems($items)
     {
-
+        $this->items = $items;
     }
 
 
     public function addItem($name, $price, $quantity = 1, $description = '')
     {
+        $item = [
+            'name' => $name,
+            'price' => $price,
+            'quantity' => $quantity,
+            'description' => $description,
+        ];
 
+        $this->items[] = $item;
     }
 
 
@@ -73,19 +84,34 @@ class PagarMe extends Intermediary implements PaymentInterface
 
     }
 
-    public function addReceiver($data) 
+    public function addReceiver($receiver) 
     {
-
+        $transferInterval = "monthly";
+        $transferDay = 13;
+        $transferEnabled = true;
+        $automaticAnticipationEnabled = true;
+        $anticipatableVolumePercentage = 42;
+        $this->receiver[] = $this->pagarMe->recipient()->create(
+            $receiver,
+            $transferInterval,
+            $transferDay,
+            $transferEnabled,
+            $automaticAnticipationEnabled,
+            $anticipatableVolumePercentage
+        );
     }
 
 
     public function send() 
     {
-        $this->payment = $this->pagarMe->transaction()->boletoTransaction(
+        return $this->pagarMe->transaction()->boletoTransaction(
             1000,
             $this->customer,
             'http://requestb.in/pkt7pgpk',
-            ['idProduto' => 13933139]
+            [
+                'uniqueId' => $this->uniqueId,
+                'items' => $this->items
+            ]
         );
         
     }
@@ -104,8 +130,6 @@ class PagarMe extends Intermediary implements PaymentInterface
         }catch (ClientException $e) {
             throw new ValidationException($e->getMessage());
         }
-        
-        pr($this->customer); exit;
     }
 
     public function addPhone($data) 
@@ -138,6 +162,48 @@ class PagarMe extends Intermediary implements PaymentInterface
             'state' => $state,
             'country' => $country
         ]);
+    }
+
+    public function createAccount1() {
+        $bankCode = '341';
+        $agenciaNumber = '0932';
+        $accountNumber = '58054';
+        $accountDigit = '5';
+        $documentNumber = '26268738888';
+        $legalName = 'Conta Teste 1';
+        $agenciaDigit = '1';
+        $bankAccount = $this->pagarMe->bankAccount()->create(
+            $bankCode,
+            $agenciaNumber,
+            $accountNumber,
+            $accountDigit,
+            $documentNumber,
+            $legalName,
+            $agenciaDigit
+        );
+
+        return $bankAccount;
+    }
+
+    public function createAccount2() {
+        $bankCode = '351';
+        $agenciaNumber = '0931';
+        $accountNumber = '58055';
+        $accountDigit = '6';
+        $documentNumber = '226268738888';
+        $legalName = 'Conta Teste 2';
+        $agenciaDigit = '1';
+        $bankAccount = $this->pagarMe->bankAccount()->create(
+            $bankCode,
+            $agenciaNumber,
+            $accountNumber,
+            $accountDigit,
+            $documentNumber,
+            $legalName,
+            $agenciaDigit
+        );
+
+        return $bankAccount;
     }
 
 }
