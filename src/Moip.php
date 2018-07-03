@@ -31,8 +31,8 @@ class Moip extends Intermediary implements PaymentInterface{
      * @throws RequiredArgumentException
      * @throws InvalidArgumentException
      */
-    public function __construct($config = []) {
-
+    public function __construct($config = []) 
+    {
         $this->setDefaults($config);
 
         if (isset($config['token']) && !empty($config['token']) && isset($config['key']) && !empty($config['key'])) {               
@@ -49,8 +49,8 @@ class Moip extends Intermediary implements PaymentInterface{
         $this->order = $this->moip->orders();
     }
 
-    public function setDefaults($config) {
-
+    public function setDefaults($config) 
+    {
         $config = array_merge($config, ['env' => 'sandbox']);
 
         $this->setEnv($config['env']);
@@ -62,20 +62,18 @@ class Moip extends Intermediary implements PaymentInterface{
         }
     }
 
-
-    public function basicAuth() {
+    public function basicAuth() 
+    {
         return new MoipSdk(new BasicAuth($this->getToken(), $this->getKey()), $this->getEndPoint());
     }
-    public function auth() {
+
+    public function auth() 
+    {
         return new MoipSdk(new OAuth($this->getAccessToken()), $this->getEndPoint());
     }
 
-    public function getAuth() {
-        return $this->moip;
-    }
-
-    public function createApp($data) {
-
+    public function createApp($data) 
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
@@ -94,8 +92,8 @@ class Moip extends Intermediary implements PaymentInterface{
         return $app;
     }
 
-    public function createAccount($data) {
-
+    public function createAccount($data) 
+    {
         $defaults = [
             'type' => 'MERCHANT',
             'country_code' => 55,
@@ -127,7 +125,8 @@ class Moip extends Intermediary implements PaymentInterface{
     }
 
 
-    public function getAuthUrl($data = []) {
+    public function getAuthUrl($data = []) 
+    {
         $connect = new Connect($data['redirectUri'], $data['appId'], true, $this->getEnv() == 'production' ? Connect::ENDPOINT_PRODUCTION : Connect::ENDPOINT_SANDBOX);
         $connect->setScope(Connect::RECEIVE_FUNDS)
             ->setScope(Connect::REFUND)
@@ -136,22 +135,25 @@ class Moip extends Intermediary implements PaymentInterface{
         return $connect->getAuthUrl();
     }
 
-    public function getOAuth($data = []) {
+    public function getOAuth($data = []) 
+    {
         try {
             $connect = new Connect($data['redirectUri'], $data['appId'], true,  $this->getEnv() == 'production' ? Connect::ENDPOINT_PRODUCTION : Connect::ENDPOINT_SANDBOX);
             $connect->setClientSecret($data['secret']);
             $connect->setCode($data['code']);
             return $connect->authorize();
         }catch (UnexpectedException $e) {
-            pr($e->getMessage());
+            throw new Exception($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
-            pr($e->getMessage());
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new Exception($e->getMessage(), 403);
         }
     }
 
 
-    public function send() {
-
+    public function send() 
+    {
         try {
             //Criando um pedido
             $this->order = $this->order->create();
@@ -161,35 +163,40 @@ class Moip extends Intermediary implements PaymentInterface{
             return $this->payment->execute();
 
         }catch (UnexpectedException $e) {
-            pr($e->getMessage());
+            throw new Exception($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
-            pr($e->getErrors());
+            throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            pr($e->getMessage());
+            throw new Exception($e->getMessage(), 403);
         }
     }
 
-    public function addItems($items) {
+    public function addItems($items) 
+    {
         foreach($items as $key => $item) {
             //$item = new Item($item['name'], $item['price'], $item['quantity'], $item['description']);
             $this->order->addItem($item['name'], $item['quantity'], $item['description'], $item['price']);
         }
     }
 
-    public function addItem($name, $price, $quantity = 1, $description = '') {
+    public function addItem($name, $price, $quantity = 1, $description = '') 
+    {
         //$item = new Item($name, $price, $quantity, $description);
         $this->order->addItem($name, $quantity, $description, $price);
     }
 
-     public function addReceiver($data) {
-
+    public function addReceiver($data) 
+    {
         $data['type'] = $data['type'] == self::PRIMARY_RECEIVER ? 'PRIMARY' : 'SECONDARY';
 
         $this->order->addReceiver($data['receiverId'], $data['type'], $data['fixed'], $data['percentage'], $data['processingFee']);
     }
 
-    public function addCustomer($data) {
+    public function addCustomer($data) 
+    {
+        $defaults = ['complement' => ''];
 
+        $data = array_merge($data, $defaults);
 
         try {
             $customer = $this->moip->customers()->setOwnId(uniqid())
@@ -210,22 +217,21 @@ class Moip extends Intermediary implements PaymentInterface{
             $this->order->setCustomer($customer );     
 
         }catch (UnexpectedException $e) {
-            pr($e->getMessage());
+            throw new Exception($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
-            pr($e->getErrors());
-        }catch (UnautorizedException $e) {  
-            pr($e->getMessage());
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new Exception($e->getMessage(), 403);
         }
-
-
     }
 
-    public function addUniqueId($uniqueId) {
+    public function addUniqueId($uniqueId) 
+    {
         $this->order->setOwnId($uniqueId);
     }
 
-    public function setPaymentMethod() {
-
+    public function setPaymentMethod() 
+    {
         if ($this->paymentMethodType == self::BOLETO) {
             $logo_uri = 'https://cdn.moip.com.br/wp-content/uploads/2016/05/02163352/logo-moip.png';
             $expiration_date = new \DateTime();
@@ -236,13 +242,14 @@ class Moip extends Intermediary implements PaymentInterface{
         }
     }
 
-    public function addPaymentMethod($type, $data) {
+    public function addPaymentMethod($type, $data) 
+    {
         $this->paymentMethodType = $type;
         $this->paymentMethodData = $data;
     }
 
-    public function getAppAccount() {
-        
+    public function getAppAccount() 
+    {        
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -260,8 +267,8 @@ class Moip extends Intermediary implements PaymentInterface{
         return $account;
     }
 
-    public function checkAccountExists($taxDocument){
-
+    public function checkAccountExists($taxDocument)
+    {
         if ($taxDocument == null) {
             throw new RequiredArgumentException('taxDocument é obrigatório', 400);
         }
@@ -274,12 +281,11 @@ class Moip extends Intermediary implements PaymentInterface{
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
             throw new Exception($e->getMessage(), 403);
-        }
- 
+        } 
     }
 
-    public function consultAccount($clientId){
-
+    public function consultAccount($clientId)
+    {
         if ($clientId == null) {
             throw new RequiredArgumentException('clientId é obrigatório', 400);
         }

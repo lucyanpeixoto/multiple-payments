@@ -8,7 +8,7 @@ interface PaymentInterface {
     /**
      * @param empty
      */
-    function auth();
+    public function create();
 
     /**
      * @param string $uniqueId
@@ -19,6 +19,11 @@ interface PaymentInterface {
      * @param $items
      */
     function addItems($items);
+
+    /**
+     * @param $data
+     */
+    function addCustomer($data);
 
     /**
      * @param string $name

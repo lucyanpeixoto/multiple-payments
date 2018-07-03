@@ -2,55 +2,33 @@
 
 namespace Payment;
 
-use Payment\Exceptions\InvalidArgumentException;
-use Payment\Exceptions\RequiredArgumentException;
+use Payment\Exceptions\ValidationException;
 
 class Payment {
 
     const PRIMARY_RECEIVER = 1;
     const SECONDARY_RECEIVER = 2;
+    const CREDIT_CARD = 1;
     const BOLETO = 2;
     const ONLINE_DEBIT = 3;
-    const CREDIT_CARD = 1;
 
     private $intermediary;
 
-    public function __construct(Intermediary $intermediary) {
+    public function __construct(Intermediary $intermediary) 
+    {
         $this->intermediary = $intermediary;
     }
 
-    public function auth() {
-        return $this->intermediary->auth();
-    }
-
-    public function basicAuth() {
-        return $this->intermediary->basicAuth();
-    }
-
-    public function test() {
-        return $this->intermediary->test();
-    }
-
-    public function orders($id) {
-        return $this->intermediary->orders($id);
-    }
-
-    public function create() {
+    public function create() 
+    {
         return $this->intermediary->create();
     }
 
     /**
-     * @param array $data
      * @return mixed
      */
-    public function payment(array $data) {
-        return $this->intermediary->payment($data);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function send() {
+    public function send() 
+    {
         return $this->intermediary->send();
     }
 
@@ -58,7 +36,8 @@ class Payment {
      * @param $items
      * @return mixed
      */
-    public function addItems($items) {
+    public function addItems($items) 
+    {
         return $this->intermediary->addItems($items);
     }
 
@@ -69,25 +48,26 @@ class Payment {
      * @param string $description
      * @return mixed
      */
-    public function addItem($name, $price, $quantity = 1, $description = '') {
+    public function addItem($name, $price, $quantity = 1, $description = '') 
+    {
         return $this->intermediary->addItem($name, $price, $quantity, $description);
     }
 
     /**
      * @param $data
-     * @throws InvalidArgumentException
-     * @throws RequiredArgumentException
+     * @throws ValidationException
+     * @throws ValidationException
      */
-    public function addReceiver($data) {
-
+    public function addReceiver($data) 
+    {
         if (!isset($data)) {
-            throw new RequiredArgumentException('$data é obrigatório', 400);
+            throw new ValidationException('$data é obrigatório', 400);
         }elseif (!is_array($data)) {
-            throw new InvalidArgumentException('$data deve ser array, foi passado '.gettype($data), 400);
+            throw new ValidationException('$data deve ser array, foi passado '.gettype($data), 400);
         }elseif (!isset($data['receiverId']) || empty($data['receiverId'])) {
-            throw new RequiredArgumentException('receiver_id é obrigatório', 400);
+            throw new ValidationException('receiver_id é obrigatório', 400);
         }elseif (isset($data['type']) && !in_array($data['type'], [self::PRIMARY_RECEIVER, self::SECONDARY_RECEIVER])) {
-            throw new InvalidArgumentException('$data[\'type\'] tem que ser 1 (Primário) ou 2 (Secundário), foi passado ' . $data['type'], 400);
+            throw new ValidationException('$data[\'type\'] tem que ser 1 (Primário) ou 2 (Secundário), foi passado ' . $data['type'], 400);
         }
 
         $data += [
@@ -100,27 +80,32 @@ class Payment {
         $this->intermediary->addReceiver($data);
     }
 
-    public function addCustomer($data) {
+    public function addCustomer($data) 
+    {
+        if (!isset($data)) {
+            throw new ValidationException('$data é obrigatório', 400);
+        }
+
         $this->intermediary->addCustomer($data);
     }
 
-    public function addUniqueId($uniqueId) {
+    public function addUniqueId($uniqueId) 
+    {
+        if (!isset($uniqueId)) {
+            throw new ValidationException('$uniqueId é obrigatório', 400);
+        }
+
         $this->intermediary->addUniqueId($uniqueId);
     }
 
-    public function addPaymentMethod($type, $data) {
+    public function addPaymentMethod($type, $data) 
+    {
+        if (!isset($type)) {
+            throw new ValidationException('$type é obrigatório', 400);
+        }elseif (!isset($data)){
+            throw new ValidationException('$data é obrigatório', 400);
+        }
+
         $this->intermediary->addPaymentMethod($type, $data);
-    }
-
-    public function getItems() {
-        return $this->intermediary->getItems();
-    }
-
-    public function order($data) {
-        return $this->intermediary->order($data);
-    }
-
-    public function getAuth() {
-        return $this->intermediary->getAuth();
     }
 }

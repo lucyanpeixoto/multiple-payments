@@ -7,6 +7,9 @@ use PagarMe\Sdk\Customer\Address;
 use Payment\Contracts\PaymentInterface;
 use PagarMe\Sdk\PagarMe as PagarMeSdk;
 use PagarMe\Sdk\ClientException;
+use Payment\Exceptions\InvalidArgumentException;
+use Payment\Exceptions\RequiredArgumentException;
+use Payment\Exceptions\ValidationException;
 
 class PagarMe extends Intermediary implements PaymentInterface
 {
@@ -80,7 +83,6 @@ class PagarMe extends Intermediary implements PaymentInterface
 
     public function send() 
     {
-
         $this->payment = $this->pagarMe->transaction()->boletoTransaction(
             1000,
             $this->customer,
@@ -90,25 +92,26 @@ class PagarMe extends Intermediary implements PaymentInterface
         
     }
 
-    public function addCustomer($data) {
-
+    public function addCustomer($data) 
+    {
         try {
-        $this->customer = $this->pagarMe->customer()->create(
-            $data['name'] . ' ' . $data['lastName'],
-            $data['email'],
-            $data['taxDocument'],
-            $this->addAddress($data),
-            $this->addPhone($data)
-        );
+            $this->customer = $this->pagarMe->customer()->create(
+                $data['name'] . ' ' . $data['lastName'],
+                $data['email'],
+                $data['taxDocument'],
+                $this->addAddress($data),
+                $this->addPhone($data)
+            );
 
         }catch (ClientException $e) {
-            pr(json_decode($e->getMessage())); exit;
+            throw new ValidationException($e->getMessage());
         }
+        
         pr($this->customer); exit;
     }
 
-    public function addPhone($data) {
-
+    public function addPhone($data) 
+    {
         return new Phone([
             'ddd' => substr($data['phone'], 0, 2),
             'number' => substr($data['phone'], 2, 9),
@@ -116,8 +119,8 @@ class PagarMe extends Intermediary implements PaymentInterface
         ]);
     }
 
-    private function addAddress($data) {
-        
+    private function addAddress($data) 
+    {        
         $street = $data['street'];
         $streetNumber = $data['number'];
         $neighborhood = $data['district'];
