@@ -7,8 +7,6 @@ use PagarMe\Sdk\Customer\Address;
 use Payment\Contracts\PaymentInterface;
 use PagarMe\Sdk\PagarMe as PagarMeSdk;
 use PagarMe\Sdk\ClientException;
-use Payment\Exceptions\InvalidArgumentException;
-use Payment\Exceptions\RequiredArgumentException;
 use Payment\Exceptions\ValidationException;
 
 class PagarMe extends Intermediary implements PaymentInterface

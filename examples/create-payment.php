@@ -5,8 +5,7 @@ require_once '../vendor/autoload.php';
 use Payment\Payment;
 use Payment\Moip;
 use Payment\PagarMe;
-use Payment\Exceptions\InvalidArgumentException;
-use Payment\Exceptions\RequiredArgumentException;
+use Payment\Exceptions\ValidationException;
 
 //Seller
 $MoipAccessToken = '2f35e3dad14b46718e15028ae833eeeb_v2';
@@ -32,10 +31,6 @@ try {
 
     pr($response); exit;
 
-}catch (InvalidArgumentException $e) {
-    pr($e->getCode());
-    pr($e->getMessage()); exit;
-}catch (RequiredArgumentException $e) {
-    pr($e->getCode());
-    pr($e->getMessage()); exit;
+}catch (ValidationException $e) {
+    pr(json_decode($e->getMessage())); exit;
 }
