@@ -9,8 +9,6 @@ use Moip\Exceptions\UnexpectedException;
 use Moip\Exceptions\ValidationException as MoipValidationException;
 use Moip\Moip as MoipSdk;
 use Payment\Contracts\PaymentInterface;
-use Payment\Exceptions\InvalidArgumentException;
-use Payment\Exceptions\RequiredArgumentException;
 use Payment\Exceptions\ValidationException;
 
 class Moip extends Intermediary implements PaymentInterface{
@@ -26,11 +24,6 @@ class Moip extends Intermediary implements PaymentInterface{
     private $paymentMethodType;
     private $payment;
 
-    /**
-     * Moip constructor.
-     * @throws RequiredArgumentException
-     * @throws InvalidArgumentException
-     */
     public function __construct($config = []) 
     {
         $this->setDefaults($config);
@@ -116,11 +109,11 @@ class Moip extends Intermediary implements PaymentInterface{
                     $data['zip'], $data['complement'], $data['country'])
                 ->create(); 
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         }
     }
 
@@ -143,11 +136,11 @@ class Moip extends Intermediary implements PaymentInterface{
             $connect->setCode($data['code']);
             return $connect->authorize();
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         }
     }
 
@@ -163,11 +156,11 @@ class Moip extends Intermediary implements PaymentInterface{
             return $this->payment->execute();
 
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         }
     }
 
@@ -217,11 +210,11 @@ class Moip extends Intermediary implements PaymentInterface{
             $this->order->setCustomer($customer );     
 
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         }
     }
 
@@ -270,35 +263,35 @@ class Moip extends Intermediary implements PaymentInterface{
     public function checkAccountExists($taxDocument)
     {
         if ($taxDocument == null) {
-            throw new RequiredArgumentException('taxDocument é obrigatório', 400);
+            throw new ValidationException('taxDocument é obrigatório', 400);
         }
 
         try{ 
             return $this->moip->accounts()->checkExistence($taxDocument); 
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         } 
     }
 
     public function consultAccount($clientId)
     {
         if ($clientId == null) {
-            throw new RequiredArgumentException('clientId é obrigatório', 400);
+            throw new ValidationException('clientId é obrigatório', 400);
         }
 
         try{
             $account = $this->moip->accounts()->get($clientId);
             return $account;
         }catch (UnexpectedException $e) {
-            throw new Exception($e->getMessage(), 400);
+            throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
             throw new ValidationException($e->__toString(), 400);
         }catch (UnautorizedException $e) {
-            throw new Exception($e->getMessage(), 403);
+            throw new ValidationException($e->getMessage(), 403);
         } 
     }
 }
