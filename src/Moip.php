@@ -90,13 +90,15 @@ class Moip extends Intermediary implements PaymentInterface{
         $defaults = [
             'type' => 'MERCHANT',
             'country_code' => 55,
-            'country' => 'BRA'
+            'country' => 'BRA',
+            'complement' => '',
+            'companyComplement' => ''
         ];
 
         $data = array_merge($data, $defaults);
 
         try {
-            return $this->moip->accounts()
+            $account = $this->moip->accounts()
                 ->setName($data['name'])
                 ->setLastName($data['lastName'])
                 ->setEmail($data['email'])
@@ -108,6 +110,16 @@ class Moip extends Intermediary implements PaymentInterface{
                     $data['district'], $data['city'], $data['state'],
                     $data['zip'], $data['complement'], $data['country'])
                 ->create(); 
+
+                if ( (isset($data['companyTaxDocument'])) && (!empty($data['companyTaxDocument']))) {
+                    $account->setCompanyName($data['companyName'], $data['businessName'])
+                        ->setCompanyOpeningDate($data['openingDate'])
+                        ->setCompanyPhone(substr($data['companyPhone'], 0, 2), substr($data['companyPhone'], 2, 9), $data['country_code'])
+                        ->setCompanyTaxDocument($data['companyTaxDocument'])
+                        ->setCompanyAddress($data['companyStreet'], $data['companyNumber'], $data['companyDistrict'], $data['companyCity'], $data['companyState'], $data['companyZip'], $data['companyComplement'], $data['country']);
+                }
+                return $account;
+
         }catch (UnexpectedException $e) {
             throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
