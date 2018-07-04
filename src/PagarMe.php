@@ -164,46 +164,21 @@ class PagarMe extends Intermediary implements PaymentInterface
         ]);
     }
 
-    public function createAccount1() {
-        $bankCode = '341';
-        $agenciaNumber = '0932';
-        $accountNumber = '58054';
-        $accountDigit = '5';
-        $documentNumber = '26268738888';
-        $legalName = 'Conta Teste 1';
-        $agenciaDigit = '1';
-        $bankAccount = $this->pagarMe->bankAccount()->create(
-            $bankCode,
-            $agenciaNumber,
-            $accountNumber,
-            $accountDigit,
-            $documentNumber,
-            $legalName,
-            $agenciaDigit
-        );
-
-        return $bankAccount;
+    public function createReceiver($data) 
+    {
+        try {
+            $bankAccount = $this->pagarMe->bankAccount()->create(
+                $data['bankCode'],
+                $data['agencyNumber'],
+                $data['accountNumber'],
+                $data['accountDigit'],
+                $data['taxDocument'],
+                $data['holder'],
+                $data['agencyDigit']
+            );
+            return $bankAccount;
+        } catch (ClientException $e) {
+            throw new ValidationException($e->getMessage());
+        }
     }
-
-    public function createAccount2() {
-        $bankCode = '351';
-        $agenciaNumber = '0931';
-        $accountNumber = '58055';
-        $accountDigit = '6';
-        $documentNumber = '226268738888';
-        $legalName = 'Conta Teste 2';
-        $agenciaDigit = '1';
-        $bankAccount = $this->pagarMe->bankAccount()->create(
-            $bankCode,
-            $agenciaNumber,
-            $accountNumber,
-            $accountDigit,
-            $documentNumber,
-            $legalName,
-            $agenciaDigit
-        );
-
-        return $bankAccount;
-    }
-
 }
