@@ -204,19 +204,19 @@ class Moip extends Intermediary implements PaymentInterface{
         $data = array_merge($data, $defaults);
 
         try {
-            $customer = $this->moip->customers()->setOwnId(uniqid())
+            $customer = $this->moip->customers()->setOwnId($data['id'])
                 ->setFullname($data['name'] . ' ' . $data['lastName'])
                 ->setEmail($data['email'])
                 ->setTaxDocument($data['taxDocument'])
                 ->setPhone(substr($data['phone'], 0, 2), substr($data['phone'], 2, 9))
                 ->addAddress('BILLING',
-                    $data['street'], $data['number'],
-                    $data['district'], $data['city'], $data['state'],
-                    $data['zip'], $data['complement'], $data['country'])
+                    $data['billingAddress']['street'], $data['billingAddress']['number'],
+                    $data['billingAddress']['district'], $data['billingAddress']['city'], $data['billingAddress']['state'],
+                    $data['billingAddress']['zip'], $data['billingAddress']['complement'], $data['billingAddress']['country'])
                 ->addAddress('SHIPPING',
-                    $data['street'], $data['number'],
-                    $data['district'], $data['city'], $data['state'],
-                    $data['zip'], $data['complement'], $data['country'])
+                    $data['billingAddress']['street'], $data['billingAddress']['number'],
+                    $data['billingAddress']['district'], $data['billingAddress']['city'], $data['billingAddress']['state'],
+                    $data['billingAddress']['zip'], $data['billingAddress']['complement'], $data['billingAddress']['country'])
                 ->create();    
                 
             $this->order->setCustomer($customer );     
