@@ -180,7 +180,7 @@ class Moip extends Intermediary implements PaymentInterface{
     {
         foreach($items as $key => $item) {
             //$item = new Item($item['name'], $item['price'], $item['quantity'], $item['description']);
-            $this->order->addItem($item['name'], $item['quantity'], $item['description'], $item['price']);
+            $this->order->addItem($item['name'], $item['quantity'], $item['description'], floatval($item['price']));
         }
     }
 
