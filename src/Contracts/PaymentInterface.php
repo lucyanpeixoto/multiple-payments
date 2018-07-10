@@ -16,6 +16,11 @@ interface PaymentInterface {
     function addUniqueId($uniqueId);
 
     /**
+    * @param string $notificationUrl
+    */
+    function addNotificationUrl($notificationUrl);
+
+    /**
      * @param $items
      */
     function addItems($items);

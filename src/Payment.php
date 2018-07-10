@@ -98,6 +98,15 @@ class Payment {
         $this->intermediary->addUniqueId($uniqueId);
     }
 
+    public function addNotificationUrl($notificationUrl) 
+    {
+        if (!isset($notificationUrl)) {
+            throw new ValidationException('$uniqueId é obrigatório', 400);
+        }
+
+        $this->intermediary->addNotificationUrl($notificationUrl);
+    }
+
     public function addPaymentMethod($type, $data) 
     {
         if (!isset($type)) {

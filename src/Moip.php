@@ -156,6 +156,22 @@ class Moip extends Intermediary implements PaymentInterface{
         }
     }
 
+    public function addNotificationUrl($notificationUrl) 
+    {
+        try {
+            $this->moip->notifications()
+                ->addEvent('ORDER.*')
+                ->addEvent('PAYMENT.*')
+                ->setTarget($notificationUrl)
+                ->create();
+        }catch (UnexpectedException $e) {
+            throw new ValidationException($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new ValidationException($e->getMessage(), 403);
+        }
+    }
 
     public function send() 
     {
