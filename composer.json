@@ -20,6 +20,9 @@
     "autoload": {
         "psr-4": {
             "Payment\\": "src"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     }
 }
