@@ -242,7 +242,7 @@ class Moip extends Intermediary implements PaymentInterface{
                 ->setBoleto(
                 $this->paymentMethodData['expirationDate'], 
                 $this->paymentMethodData['logoPath'], 
-                $this->paymentMethodData['expirationDate']);
+                $this->paymentMethodData['instructions']);
         }
     }
 
