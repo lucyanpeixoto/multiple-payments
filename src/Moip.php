@@ -179,14 +179,12 @@ class Moip extends Intermediary implements PaymentInterface{
     public function addItems($items) 
     {
         foreach($items as $key => $item) {
-            //$item = new Item($item['name'], $item['price'], $item['quantity'], $item['description']);
-            $this->order->addItem($item['name'], $item['quantity'], $item['description'], floatval($item['price']));
+            $this->order->addItem($item['name'], $item['quantity'], $item['description'], intval($item['price']));
         }
     }
 
     public function addItem($name, $price, $quantity = 1, $description = '') 
     {
-        //$item = new Item($name, $price, $quantity, $description);
         $this->order->addItem($name, $quantity, $description, $price);
     }
 
@@ -238,12 +236,13 @@ class Moip extends Intermediary implements PaymentInterface{
     public function setPaymentMethod() 
     {
         if ($this->paymentMethodType == self::BOLETO) {
-            $logo_uri = 'https://cdn.moip.com.br/wp-content/uploads/2016/05/02163352/logo-moip.png';
-            $expiration_date = new \DateTime();
-            $instruction_lines = ['INSTRUÇÃO 1', 'INSTRUÇÃO 2', 'INSTRUÇÃO 3'];
+            
 
             $this->payment = $this->order->payments()
-                ->setBoleto($expiration_date, $logo_uri, $instruction_lines);
+                ->setBoleto(
+                $this->paymentMethodData['expirationDate'], 
+                $this->paymentMethodData['logoPath'], 
+                $this->paymentMethodData['expirationDate']);
         }
     }
 
