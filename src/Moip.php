@@ -287,7 +287,7 @@ class Moip extends Intermediary implements PaymentInterface{
         return $account;
     }
 
-    public function checkAccountExists($taxDocument)
+    public function sdkCheckAccountExists($taxDocument)
     {
         if ($taxDocument == null) {
             throw new ValidationException('taxDocument é obrigatório', 400);
@@ -302,6 +302,34 @@ class Moip extends Intermediary implements PaymentInterface{
         }catch (UnautorizedException $e) {
             throw new ValidationException($e->getMessage(), 403);
         } 
+    }
+
+    public function checkAccountExists($data)
+    {        
+
+        if ($data == null) {
+            throw new ValidationException('$data é obrigatório', 400);
+        }
+
+        $param = key($data);
+        $value = $data[$param];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->getAccessToken()
+            )
+        );
+
+        curl_setopt_array($ch, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => $this->getEndPoint() . "/v2/accounts/exists?$param=$value"
+        ));        
+        
+        $response = curl_exec($ch);
+        curl_close ($ch);
+
+        return $response;
     }
 
     public function consultAccount($clientId)
