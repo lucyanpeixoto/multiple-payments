@@ -16,9 +16,8 @@ $items = json_decode(file_get_contents('data/items.json'), true);
 $receiver = json_decode(file_get_contents('data/receiver.json'), true);
 $customer = json_decode(file_get_contents('data/customer.json'), true);
 $paymentData = json_decode(file_get_contents('data/payment-data.json'), true);
-
 try {
-    $payment = new Payment(new PagarMe(['access_token' => $PagarMeAccessToken]));
+    $payment = new Payment(new Moip(['access_token' => $MoipAccessToken]));
     
     $payment->create();
     $payment->addCustomer($customer);

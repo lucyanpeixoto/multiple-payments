@@ -208,14 +208,18 @@ class Moip extends Intermediary implements PaymentInterface{
     {
         $data['type'] = $data['type'] == self::PRIMARY_RECEIVER ? 'PRIMARY' : 'SECONDARY';
 
-        $this->order->addReceiver($data['receiverId'], $data['type'], $data['fixed'], $data['percentage'], $data['processingFee']);
+        $this->order->addReceiver($data['receiverId'], $data['type'], $data['fixed'], $data['percentage'], $data['feePayor']);
     }
 
     public function addCustomer($data) 
     {
-        $defaults = ['complement' => ''];
-
-        $data = array_merge($data, $defaults);
+        $defaults = [
+            'id' => uniqid(),
+        ];
+        
+        $data = array_merge($data, $defaults);        
+        $data['billingAddress']['complement'] = isset($data['billingAddress']['complement']) ? $data['billingAddress']['complement'] : '';
+        $data['billingAddress']['country'] = isset($data['billingAddress']['country']) ? $data['billingAddress']['country'] : 'BRA';
 
         try {
             $customer = $this->moip->customers()->setOwnId($data['id'])
@@ -257,7 +261,7 @@ class Moip extends Intermediary implements PaymentInterface{
             $this->payment = $this->order->payments()
                 ->setBoleto(
                 $this->paymentMethodData['expirationDate'], 
-                $this->paymentMethodData['logoPath'], 
+                $this->paymentMethodData['logoUri'], 
                 $this->paymentMethodData['instructions']);
         }
     }

@@ -5,12 +5,14 @@
     "email": "lucyan@email.com",
     "taxDocument": "12345678909",
     "phone": "82999490051",
-    "street": "Conjunto Climério Sarmento",
-    "number": "10",
-    "district": "Jatiúca",
-    "city": "Maceió",
-    "state": "Alagoas",
-    "zip": "57036810",
-    "complement": "Bloco 3 - AP 401",
-    "country": "BRA"
+    "billingAddress": {
+        "street": "Conjunto Climério Sarmento",
+        "number": "10",
+        "district": "Jatiúca",
+        "city": "Maceió",
+        "state": "Alagoas",
+        "zip": "57036810",
+        "complement": "Bloco 3 - AP 401",
+        "country": "BRA"
+    }
 }
