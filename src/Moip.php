@@ -353,4 +353,28 @@ class Moip extends Intermediary implements PaymentInterface{
             throw new ValidationException($e->getMessage(), 403);
         } 
     }
+
+    public function refreshAccessToken($refreshToken)
+    {        
+        $data = [
+            "grant_type" => "refresh_token",
+            "refresh_token" => $refreshToken,
+        ];        
+        
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://connect-sandbox.moip.com.br/oauth/token");
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $server_output = curl_exec ($ch);
+        $response = json_decode($server_output);
+        curl_close ($ch);
+        
+        return $response;
+    }
 }
