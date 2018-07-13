@@ -16,7 +16,7 @@ class Payment {
 
     public function __construct(Intermediary $intermediary) 
     {
-        $this->intermediary = $intermediary;
+        return $this->intermediary = $intermediary;
     }
 
     public function create() 
@@ -25,8 +25,9 @@ class Payment {
     }
 
     /**
-     * @return mixed
+     * return @mixed
      */
+    
     public function send() 
     {
         return $this->intermediary->send();
@@ -34,10 +35,15 @@ class Payment {
 
     /**
      * @param $items
-     * @return mixed
+     * return @mixed
      */
+
     public function addItems($items) 
     {
+        if (!isset($data)) {
+            throw new ValidationException('$data é obrigatório', 400);
+        }
+
         return $this->intermediary->addItems($items);
     }
 
@@ -46,8 +52,9 @@ class Payment {
      * @param $price
      * @param int $quantity
      * @param string $description
-     * @return mixed
+     * return @mixed
      */
+
     public function addItem($name, $price, $quantity = 1, $description = '') 
     {
         return $this->intermediary->addItem($name, $price, $quantity, $description);
@@ -58,6 +65,7 @@ class Payment {
      * @throws ValidationException
      * @throws ValidationException
      */
+
     public function addReceiver($data) 
     {
         if (!isset($data)) {
@@ -74,11 +82,16 @@ class Payment {
             'type' => self::PRIMARY_RECEIVER,
             'fixed' => null,
             'percentage' => null,
-            'processingFee' => false
+            'feePayor' => false
         ];
 
-        $this->intermediary->addReceiver($data);
+        return $this->intermediary->addReceiver($data);
     }
+
+    /**
+     * @param $data
+     * return @mixed
+     */
 
     public function addCustomer($data) 
     {
@@ -86,8 +99,13 @@ class Payment {
             throw new ValidationException('$data é obrigatório', 400);
         }
 
-        $this->intermediary->addCustomer($data);
+        return $this->intermediary->addCustomer($data);
     }
+
+    /**
+     * @param $uniqueId
+     * return @mixed
+     */
 
     public function addUniqueId($uniqueId) 
     {
@@ -95,8 +113,13 @@ class Payment {
             throw new ValidationException('$uniqueId é obrigatório', 400);
         }
 
-        $this->intermediary->addUniqueId($uniqueId);
+        return $this->intermediary->addUniqueId($uniqueId);
     }
+
+    /**
+     * @param $notificationUrl
+     * return @mixed
+     */
 
     public function addNotificationUrl($notificationUrl) 
     {
@@ -104,8 +127,14 @@ class Payment {
             throw new ValidationException('$uniqueId é obrigatório', 400);
         }
 
-        $this->intermediary->addNotificationUrl($notificationUrl);
+        return $this->intermediary->addNotificationUrl($notificationUrl);
     }
+
+    /**
+     * @param $type
+     * @param $data
+     * return @mixed
+     */
 
     public function addPaymentMethod($type, $data) 
     {
@@ -115,6 +144,6 @@ class Payment {
             throw new ValidationException('$data é obrigatório', 400);
         }
 
-        $this->intermediary->addPaymentMethod($type, $data);
+        return $this->intermediary->addPaymentMethod($type, $data);
     }
 }
