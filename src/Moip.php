@@ -278,7 +278,7 @@ class Moip extends Intermediary implements PaymentInterface{
                     ->setCreditCardHash(
                         $this->paymentMethodData['hash'],
                         $this->setHolder($this->paymentMethodData['holder']))
-                    ->setInstallmentCount($this->paymentMethodData['installment'])
+                    ->setInstallmentCount($this->paymentMethodData['installments'])
                     ->setStatementDescriptor($this->paymentMethodData['statementDescription']);
             }else {
                 $this->payment = $this->order->payments()                    
@@ -288,7 +288,7 @@ class Moip extends Intermediary implements PaymentInterface{
                         $this->paymentMethodData['number'],
                         $this->paymentMethodData['cvc'],
                         $this->setHolder($this->paymentMethodData['holder']))
-                    ->setInstallmentCount($this->paymentMethodData['installment'])
+                    ->setInstallmentCount($this->paymentMethodData['installments'])
                     ->setStatementDescriptor($this->paymentMethodData['statementDescription']);
             }
         }
