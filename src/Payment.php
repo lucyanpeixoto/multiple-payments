@@ -40,8 +40,8 @@ class Payment {
 
     public function addItems($items) 
     {
-        if (!isset($data)) {
-            throw new ValidationException('$data é obrigatório', 400);
+        if (!isset($items)) {
+            throw new ValidationException('$items é obrigatório', 400);
         }
 
         return $this->intermediary->addItems($items);
@@ -66,26 +66,26 @@ class Payment {
      * @throws ValidationException
      */
 
-    public function addReceiver($data) 
+    public function addReceiver($receiver) 
     {
-        if (!isset($data)) {
-            throw new ValidationException('$data é obrigatório', 400);
-        }elseif (!is_array($data)) {
-            throw new ValidationException('$data deve ser array, foi passado '.gettype($data), 400);
-        }elseif (!isset($data['receiverId']) || empty($data['receiverId'])) {
+        if (!isset($receiver)) {
+            throw new ValidationException('$receiver é obrigatório', 400);
+        }elseif (!is_array($receiver)) {
+            throw new ValidationException('$data deve ser array, foi passado '.gettype($receiver), 400);
+        }elseif (!isset($receiver['receiverId']) || empty($receiver['receiverId'])) {
             throw new ValidationException('receiver_id é obrigatório', 400);
-        }elseif (isset($data['type']) && !in_array($data['type'], [self::PRIMARY_RECEIVER, self::SECONDARY_RECEIVER])) {
-            throw new ValidationException('$data[\'type\'] tem que ser 1 (Primário) ou 2 (Secundário), foi passado ' . $data['type'], 400);
+        }elseif (isset($receiver['type']) && !in_array($receiver['type'], [self::PRIMARY_RECEIVER, self::SECONDARY_RECEIVER])) {
+            throw new ValidationException('$data[\'type\'] tem que ser 1 (Primário) ou 2 (Secundário), foi passado ' . $receiver['type'], 400);
         }
 
-        $data += [
+        $receiver += [
             'type' => self::PRIMARY_RECEIVER,
             'fixed' => null,
             'percentage' => null,
             'feePayor' => false
         ];
 
-        return $this->intermediary->addReceiver($data);
+        return $this->intermediary->addReceiver($receiver);
     }
 
     /**
@@ -93,13 +93,13 @@ class Payment {
      * return @mixed
      */
 
-    public function addCustomer($data) 
+    public function addCustomer($customer) 
     {
-        if (!isset($data)) {
-            throw new ValidationException('$data é obrigatório', 400);
+        if (!isset($customer)) {
+            throw new ValidationException('$customer é obrigatório', 400);
         }
 
-        return $this->intermediary->addCustomer($data);
+        return $this->intermediary->addCustomer($customer);
     }
 
     /**
