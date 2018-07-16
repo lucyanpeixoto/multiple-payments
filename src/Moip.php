@@ -273,13 +273,13 @@ class Moip extends Intermediary implements PaymentInterface{
 
         }elseif ($this->paymentMethodType == self::CREDIT_CARD) {
 
-            if ($this->paymentMethodData['hash']) {
+            if (isset($this->paymentMethodData['hash']) && !empty($this->paymentMethodData['hash'])) {
                 $this->payment = $this->order->payments()
                     ->setCreditCardHash(
                         $this->paymentMethodData['hash'],
                         $this->setHolder($this->paymentMethodData['holder']))
                     ->setInstallmentCount($this->paymentMethodData['installment'])
-                    ->setStatementDescriptor($this->paymentMethodData['installmentDescriptor']);
+                    ->setStatementDescriptor($this->paymentMethodData['statementDescription']);
             }else {
                 $this->payment = $this->order->payments()                    
                     ->setCreditCard(
@@ -289,7 +289,7 @@ class Moip extends Intermediary implements PaymentInterface{
                         $this->paymentMethodData['cvc'],
                         $this->setHolder($this->paymentMethodData['holder']))
                     ->setInstallmentCount($this->paymentMethodData['installment'])
-                    ->setStatementDescriptor($this->paymentMethodData['installmentDescriptor']);
+                    ->setStatementDescriptor($this->paymentMethodData['statementDescription']);
             }
         }
     }
