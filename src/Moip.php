@@ -255,14 +255,21 @@ class Moip extends Intermediary implements PaymentInterface{
 
     public function setPaymentMethod() 
     {
-        if ($this->paymentMethodType == self::BOLETO) {
-            
+        if ($this->paymentMethodType == self::BOLETO) {            
 
             $this->payment = $this->order->payments()
                 ->setBoleto(
                 $this->paymentMethodData['expirationDate'], 
                 $this->paymentMethodData['logoUri'], 
                 $this->paymentMethodData['instructions']);
+                
+        }elseif ($this->paymentMethodType == self::ONLINE_DEBIT) {
+
+            $this->payment = $this->order->payments()                    
+                ->setOnlineBankDebit(
+                    $this->paymentMethodData['bankNumber'], 
+                    $this->paymentMethodData['expirationDate'],
+                    $this->paymentMethodData['returnUri']);
         }
     }
 
