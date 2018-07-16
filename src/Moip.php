@@ -270,9 +270,39 @@ class Moip extends Intermediary implements PaymentInterface{
                     $this->paymentMethodData['bankNumber'], 
                     $this->paymentMethodData['expirationDate'],
                     $this->paymentMethodData['returnUri']);
+
+        }elseif ($this->paymentMethodType == self::CREDIT_CARD) {
+
+            $this->payment = $this->order->payments()                    
+                ->setCreditCard(
+                    $this->paymentMethodData['expirationMonth'],
+                    $this->paymentMethodData['expirationYear'],
+                    $this->paymentMethodData['number'],
+                    $this->paymentMethodData['cvc'],
+                    $this->setHolder($this->paymentMethodData['holder']))
+                ->setInstallmentCount($this->paymentMethodData['installment'])
+                ->setStatementDescriptor($this->paymentMethodData['installmentDescriptor']);
         }
     }
 
+    private function setHolder($data) 
+    {         
+        try {
+            return $this->moip->holders()
+                ->setFullname($data['name'] . ' ' . $data['lastName'])
+                ->setBirthDate($data['birthDate'])
+                ->setTaxDocument($data['taxDocument'])
+                ->setPhone(substr($data['phone'], 0, 2), substr($data['phone'], 2, 9));           
+
+        }catch (UnexpectedException $e) {
+            throw new ValidationException($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new ValidationException($e->getMessage(), 403);
+        }
+    }
+    
     public function addPaymentMethod($type, $data) 
     {
         $this->paymentMethodType = $type;
