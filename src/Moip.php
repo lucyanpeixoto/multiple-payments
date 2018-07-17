@@ -437,7 +437,7 @@ class Moip extends Intermediary implements PaymentInterface{
         }
     }
 
-    public function addAdditionAmount($amount)
+    public function addAdditionalAmount($amount)
     {
         $this->order->setAddition($amount);
     }

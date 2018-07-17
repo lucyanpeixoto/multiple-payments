@@ -147,12 +147,12 @@ class Payment {
         return $this->intermediary->addPaymentMethod($type, $data);
     }
 
-    public function addAdditionAmount($amount)
+    public function addAdditionalAmount($amount)
     {
         if (!isset($amount)) {
             throw new ValidationException('$amount é obrigatório', 400);
         }
 
-        return $this->intermediary->addAdditionAmount($amount);
+        return $this->intermediary->addAdditionalAmount($amount);
     }
 }
