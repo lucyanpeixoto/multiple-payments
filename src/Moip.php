@@ -436,4 +436,9 @@ class Moip extends Intermediary implements PaymentInterface{
             throw new ValidationException($e->getMessage(), 403);
         }
     }
+
+    public function addAdditionAmount($amount)
+    {
+        $this->order->setAddition($amount);
+    }
 }

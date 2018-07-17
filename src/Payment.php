@@ -124,7 +124,7 @@ class Payment {
     public function addNotificationUrl($notificationUrl) 
     {
         if (!isset($notificationUrl)) {
-            throw new ValidationException('$uniqueId é obrigatório', 400);
+            throw new ValidationException('$notificationUrl é obrigatório', 400);
         }
 
         return $this->intermediary->addNotificationUrl($notificationUrl);
@@ -145,5 +145,14 @@ class Payment {
         }
 
         return $this->intermediary->addPaymentMethod($type, $data);
+    }
+
+    public function addAdditionAmount($amount)
+    {
+        if (!isset($amount)) {
+            throw new ValidationException('$amount é obrigatório', 400);
+        }
+
+        return $this->intermediary->addAdditionAmount($amount);
     }
 }
