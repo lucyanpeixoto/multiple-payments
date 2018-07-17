@@ -423,4 +423,17 @@ class Moip extends Intermediary implements PaymentInterface{
         
         return $response;
     }
+
+    public function getPublicKey()
+    {
+        try{            
+            return $this->moip->keys()->get();
+        }catch (UnexpectedException $e) {
+            throw new ValidationException($e->getMessage(), 400);
+        }catch (MoipValidationException $e) {
+            throw new ValidationException($e->__toString(), 400);
+        }catch (UnautorizedException $e) {
+            throw new ValidationException($e->getMessage(), 403);
+        }
+    }
 }
