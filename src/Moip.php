@@ -160,7 +160,6 @@ class Moip extends Intermediary implements PaymentInterface{
     {
         try {
             $this->moip->notifications()
-                ->addEvent('ORDER.*')
                 ->addEvent('PAYMENT.*')
                 ->setTarget($notificationUrl)
                 ->create();
