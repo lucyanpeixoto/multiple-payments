@@ -195,6 +195,14 @@ class Moip extends Intermediary implements PaymentInterface{
     public function addItems($items) 
     {
         foreach($items as $key => $item) {
+
+            $defaults = [
+                'description' => '',
+                'quantity' => 1
+            ];
+
+            $item = array_merge($item, $defaults);
+
             $this->order->addItem($item['name'], $item['quantity'], $item['description'], intval($item['price']));
         }
     }
