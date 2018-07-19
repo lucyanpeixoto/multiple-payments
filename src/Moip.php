@@ -158,11 +158,14 @@ class Moip extends Intermediary implements PaymentInterface{
 
     public function addNotificationUrl($notificationUrl) 
     {
-        try {
-            $this->moip->notifications()
-                ->addEvent('PAYMENT.*')
-                ->setTarget($notificationUrl)
-                ->create();
+        try {            
+            if (!$this->hasNotificationUrl()) {
+                $this->moip->notifications()
+                    ->addEvent('PAYMENT.*')
+                    ->addEvent('ORDER.*')
+                    ->setTarget($notificationUrl)
+                    ->create();
+            }
         }catch (UnexpectedException $e) {
             throw new ValidationException($e->getMessage(), 400);
         }catch (MoipValidationException $e) {
@@ -170,6 +173,16 @@ class Moip extends Intermediary implements PaymentInterface{
         }catch (UnautorizedException $e) {
             throw new ValidationException($e->getMessage(), 403);
         }
+    }
+
+    public function getNotificationUrl() {
+        $urls = $this->moip->notifications()->getList();
+        return $urls->getNotifications();
+    }
+
+    private function hasNotificationUrl() {
+        $url = (array) $this->getNotificationUrl();
+        return !empty($url);
     }
 
     public function send() 
