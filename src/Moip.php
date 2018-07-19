@@ -159,7 +159,7 @@ class Moip extends Intermediary implements PaymentInterface{
     public function addNotificationUrl($notificationUrl) 
     {
         try {            
-            if (!$this->hasNotificationUrl()) {
+            if (!$this->hasNotificationUrl($notificationUrl)) {
                 $this->moip->notifications()
                     ->addEvent('PAYMENT.*')
                     ->addEvent('ORDER.*')
@@ -175,14 +175,23 @@ class Moip extends Intermediary implements PaymentInterface{
         }
     }
 
-    public function getNotificationUrl() {
+    public function getNotificationUrl()     
+    {
         $urls = $this->moip->notifications()->getList();
         return $urls->getNotifications();
     }
 
-    private function hasNotificationUrl() {
-        $url = (array) $this->getNotificationUrl();
-        return !empty($url);
+    private function hasNotificationUrl($notificationUrl) 
+    {
+        $urls = (array) $this->getNotificationUrl();
+
+        foreach ($urls as $url) {
+            if ($url->target == $notificationUrl) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function send() 
