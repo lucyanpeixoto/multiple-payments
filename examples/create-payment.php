@@ -5,6 +5,7 @@ require_once '../vendor/autoload.php';
 use Payment\Payment;
 use Payment\Moip;
 use Payment\PagarMe;
+use Payment\Customer;
 use Payment\Exceptions\ValidationException;
 
 //Seller
@@ -19,6 +20,13 @@ $paymentData = json_decode(file_get_contents('data/payment-data.json'), true);
 try {
     $payment = new Payment(new Moip(['access_token' => $MoipAccessToken]));
     
+    $customer = new Customer();
+    $customer->setLastName('haha');
+    $customer->setTax_document('haha');
+    
+
+    pr($customer); exit;
+
     $payment->create();
     $payment->addCustomer($customer);
     $payment->addUniqueId($uniqueId);

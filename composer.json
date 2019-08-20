@@ -15,7 +15,8 @@
     "require": {
         "php": ">=5.5",
         "moip/moip-sdk-php": "^3.1",
-        "pagarme/pagarme-php": "^3.7"
+        "pagarme/pagarme-php": "^3.7",
+        "rakshazi/get-set-trait": "@stable"
     },
     "autoload": {
         "psr-4": {
